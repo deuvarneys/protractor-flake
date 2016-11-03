@@ -10,7 +10,9 @@ const DEFAULT_OPTIONS = {
   nodeBin: 'node',
   maxAttempts: 3,
   protractorArgs: DEFAULT_PROTRACTOR_ARGS,
-  parser: 'standard'
+  parser: 'standard',
+  retryInitialSpec: '',
+  retryFinalSpec: ''
 }
 
 function filterArgs (protractorArgs) {
@@ -67,6 +69,12 @@ export default function (options = {}, callback = function noop () {}) {
 
     if (specFiles.length) {
       protractorArgs = filterArgs(protractorArgs)
+      // If retryInitialSpec is specifed, add it to the beginning of specFiles array
+      parsedOptions.retryInitialSpec && specFiles.unshift(parsedOptions.retryInitialSpec);
+
+      // If retryFinalSpec is specifed, append it to the end of specFiles array
+      parsedOptions.retryFinalSpec && specFiles.push(parsedOptions.retryFinalSpec);
+
       protractorArgs.push('--specs', specFiles.join(','))
     }
 
