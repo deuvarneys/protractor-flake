@@ -18,6 +18,10 @@ var _logger = require('./logger');
 
 var _logger2 = _interopRequireDefault(_logger);
 
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
 var DEFAULT_PROTRACTOR_ARGS = [];
 
 var DEFAULT_OPTIONS = {
@@ -27,7 +31,11 @@ var DEFAULT_OPTIONS = {
   parser: 'standard',
   retryArgs: '',
   retryInitialSpec: '',
-  retryFinalSpec: ''
+  retryFinalSpec: '',
+  retryInitialSpecsIfInFailedSpecs: '',
+  retryFinalSpecsIfInFailedSpecs: '',
+  retryDoNotRerunFailedSpecs: ''
+
 };
 
 function filterArgs(protractorArgs) {
@@ -92,20 +100,84 @@ exports['default'] = function () {
     var output = '';
 
     if (specFiles.length) {
-      protractorArgs = filterArgs(protractorArgs);
+      (function () {
 
-      // If retryInitialSpec is specifed, add it to the beginning of specFiles array
-      parsedOptions.retryInitialSpec && specFiles.unshift(parsedOptions.retryInitialSpec);
+        //Remove duplicate failed specFiles (All specs are running in one browser with retry logic)
+        // Using uniqBy as uniq has a bug since lodash 4.0
+        specFiles = _lodash2['default'].uniqBy(specFiles, function (spec) {
+          return spec;
+        });
 
-      // If retryFinalSpec is specifed, append it to the end of specFiles array
-      parsedOptions.retryFinalSpec && specFiles.push(parsedOptions.retryFinalSpec);
+        protractorArgs = filterArgs(protractorArgs);
 
-      protractorArgs.push('--specs', specFiles.join(','));
+        //Do not rerun specified specs if they failed
+        if (protractorArgs.retryDoNotRerunFailedSpecs) {
+          (function () {
+            //Get array of do not rerun specs
+            var doNotRerunFailedSpecs = protractorArgs.retryDoNotRerunFailedSpecs.split(',');
+            //Filter out specs that are not in rerun list
+            specFiles = specFiles.filter(function (failedSpec) {
+              return(
+                // Return inverse of specs that are in doNotRerunFailedSpecs array
+                !_lodash2['default'].some(doNotRerunFailedSpecs, function (doNotReRunSpec) {
+                  return failedSpec.indexOf(doNotReRunSpec);
+                })
+              );
+            });
+          })();
+        }
 
-      //Add parameters to set/override values in protractor.conf.js file in event of spec failure
-      if (parsedOptions.retryArgs.length) {
-        protractorArgs = protractorArgs.concat(parsedOptions.retryArgs.split(','));
-      }
+        var foundFailedInitailSpecs = [];
+        if (protractorArgs.retryInitialSpecsIfInFailedSpecs) {
+          //Get array retryInitialSpecsIfInFailedSpecs
+          var retryInitialSpecsIfInFailedSpecs = protractorArgs.retryInitialSpecsIfInFailedSpecs.split(',');
+
+          retryInitialSpecsIfInFailedSpecs.forEach(function (initalFailedSpec) {
+            specFiles.forEach(function (failedSpec) {
+              if (failedSpec.indexOf(initalFailedSpec) !== -1) {
+                foundFailedInitailSpecs.push(failedSpec);
+              }
+            });
+          });
+
+          //Remove elements from specFiles found in foundFailedInitailSpecs
+          _lodash2['default'].pullAllWith(specFiles, foundFailedInitailSpecs, _lodash2['default'].isEqual);
+          //Move Specs to the beginning of specFiles array
+          specFiles = foundFailedInitailSpecs.concat(specFiles);
+        }
+
+        var foundFailedEndSpecs = [];
+        if (protractorArgs.retryFinalSpecsIfInFailedSpecs) {
+          //Get array retryFinalSpecsIfInFailedSpecs
+          var retryFinalSpecsIfInFailedSpecs = protractorArgs.retryFinalSpecsIfInFailedSpecs.split(',');
+
+          retryFinalSpecsIfInFailedSpecs.forEach(function (finalFailedSpecs) {
+            specFiles.forEach(function (failedSpec) {
+              if (failedSpec.indexOf(finalFailedSpecs) !== -1) {
+                foundFailedEndSpecs.push(failedSpec);
+              }
+            });
+          });
+
+          //Remove elements from specFiles found in foundFailedEndSpecs
+          _lodash2['default'].pullAllWith(specFiles, foundFailedEndSpecs, _lodash2['default'].isEqual);
+          //Move Specs to the end of specFiles file
+          specFiles = specFiles.concat(foundFailedEndSpecs);
+        }
+
+        // If retryInitialSpec is specifed, add it to the beginning of specFiles array
+        parsedOptions.retryInitialSpec && !foundFailedInitailSpecs && specFiles.unshift(parsedOptions.retryInitialSpec);
+
+        // If retryFinalSpec is specifed, append it to the end of specFiles array
+        parsedOptions.retryFinalSpec && !foundFailedEndSpecs && specFiles.push(parsedOptions.retryFinalSpec);
+
+        protractorArgs.push('--specs', specFiles.join(','));
+
+        //Add parameters to set/override values in protractor.conf.js file in event of spec failure
+        if (parsedOptions.retryArgs) {
+          protractorArgs = protractorArgs.concat(parsedOptions.retryArgs.split(','));
+        }
+      })();
     }
 
     var protractor = (0, _child_process.spawn)(parsedOptions.nodeBin, protractorArgs, options.protractorSpawnOptions);

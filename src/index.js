@@ -3,6 +3,7 @@ import {resolve} from 'path'
 import {getParser} from './parsers'
 import 'core-js/shim'
 import log from './logger'
+import _ from 'lodash';
 
 const DEFAULT_PROTRACTOR_ARGS = []
 
@@ -13,7 +14,11 @@ const DEFAULT_OPTIONS = {
   parser: 'standard',
   retryArgs: '',
   retryInitialSpec: '',
-  retryFinalSpec: ''
+  retryFinalSpec: '',
+  retryInitialSpecsIfInFailedSpecs: '',
+  retryFinalSpecsIfInFailedSpecs: '',
+  retryDoNotRerunFailedSpecs: ''
+
 }
 
 function filterArgs (protractorArgs) {
@@ -69,13 +74,75 @@ export default function (options = {}, callback = function noop () {}) {
     let output = ''
 
     if (specFiles.length) {
+
+      //Remove duplicate failed specFiles (All specs are running in one browser with retry logic)
+      // Using uniqBy as uniq has a bug since lodash 4.0
+      specFiles = _.uniqBy(specFiles, (spec) => (
+        spec
+      ));
+
       protractorArgs = filterArgs(protractorArgs)
 
+      //Do not rerun specified specs if they failed
+      if (protractorArgs.retryDoNotRerunFailedSpecs){
+        //Get array of do not rerun specs
+        const doNotRerunFailedSpecs = protractorArgs.retryDoNotRerunFailedSpecs.split(',');
+        //Filter out specs that are not in rerun list
+        specFiles = specFiles.filter((failedSpec) => (
+          // Return inverse of specs that are in doNotRerunFailedSpecs array
+          !_.some(doNotRerunFailedSpecs, (doNotReRunSpec) => {
+              return failedSpec.indexOf(doNotReRunSpec)
+          })
+
+        ));
+      }
+
+
+      const foundFailedInitailSpecs = [];
+      if (protractorArgs.retryInitialSpecsIfInFailedSpecs){
+        //Get array retryInitialSpecsIfInFailedSpecs
+        const retryInitialSpecsIfInFailedSpecs = protractorArgs.retryInitialSpecsIfInFailedSpecs.split(',');
+
+        retryInitialSpecsIfInFailedSpecs.forEach((initalFailedSpec) => {
+          specFiles.forEach((failedSpec)=> {
+            if(failedSpec.indexOf(initalFailedSpec) !== -1){
+              foundFailedInitailSpecs.push(failedSpec);
+            }
+          });
+        });
+
+        //Remove elements from specFiles found in foundFailedInitailSpecs
+        _.pullAllWith(specFiles, foundFailedInitailSpecs, _.isEqual);
+        //Move Specs to the beginning of specFiles array
+        specFiles = foundFailedInitailSpecs.concat(specFiles);
+      }
+
+
+      const foundFailedEndSpecs = [];
+      if (protractorArgs.retryFinalSpecsIfInFailedSpecs){
+        //Get array retryFinalSpecsIfInFailedSpecs
+        const retryFinalSpecsIfInFailedSpecs = protractorArgs.retryFinalSpecsIfInFailedSpecs.split(',');
+
+        retryFinalSpecsIfInFailedSpecs.forEach((finalFailedSpecs) => {
+          specFiles.forEach((failedSpec)=> {
+            if(failedSpec.indexOf(finalFailedSpecs) !== -1){
+              foundFailedEndSpecs.push(failedSpec);
+            }
+          });
+        });
+
+        //Remove elements from specFiles found in foundFailedEndSpecs
+        _.pullAllWith(specFiles, foundFailedEndSpecs, _.isEqual);
+        //Move Specs to the end of specFiles file
+        specFiles = specFiles.concat(foundFailedEndSpecs);
+      }
+
+
       // If retryInitialSpec is specifed, add it to the beginning of specFiles array
-      parsedOptions.retryInitialSpec && specFiles.unshift(parsedOptions.retryInitialSpec);
+      parsedOptions.retryInitialSpec && !foundFailedInitailSpecs && specFiles.unshift(parsedOptions.retryInitialSpec);
 
       // If retryFinalSpec is specifed, append it to the end of specFiles array
-      parsedOptions.retryFinalSpec && specFiles.push(parsedOptions.retryFinalSpec);
+      parsedOptions.retryFinalSpec && !foundFailedEndSpecs && specFiles.push(parsedOptions.retryFinalSpec);
 
       protractorArgs.push('--specs', specFiles.join(','));
 
@@ -83,7 +150,7 @@ export default function (options = {}, callback = function noop () {}) {
       if (parsedOptions.retryArgs){
         protractorArgs = protractorArgs.concat(parsedOptions.retryArgs.split(','));
       }
-      
+
     }
 
     let protractor = spawn(

@@ -65,6 +65,41 @@ You can override this with the `parser` option, specifying one of the [built in 
 - Jasmine (TODO)
 - [cucumber](docs/cucumber.md)
 
+### Additional Flags
+
+#### retryArgs
+Allows the user to pass arguments to protractor when re-running failed specs. `Accepts an array of strings or comma delimited string`
+
+### retryInitialSpec
+Allows the user to pass a spec to run before all failed specs when retrying tests
+
+### retryFinalSpec
+Allows the user to pass a spec to run after all failed specs when retrying tests
+
+### retryDoNotRerunFailedSpecs
+`Accepts: comma-delimited string`
+This will stop any specs specified here from being re-ran
+*(Will be overridden by retryInitialSpec, retryFinalSpec, retryInitialSpecsIfInFailedSpecs and retryFinalSpecsIfInFailedSpecs if specified)*
+
+### retryInitialSpecsIfInFailedSpecs
+`Accepts: comma-delimited string`
+This will move any failed specs specified here (in the order) to the beginning of the test suite (Overrides retryInitialSpec)
+```
+failedSpecs = [5,4,3,2,1]
+retryInitialSpecsIfInFailedSpecs = 2,4
+reRunFailedSpecs= [2,4,5,3,1]
+```
+
+### retryFinalSpecsIfInFailedSpecs
+`Accepts: comma-delimited string`
+This will move any failed specs specified here (in the order) to the end of the test suite (Overrides retryFinalSpec)
+```
+failedSpecs = [5,4,3,2,1]
+retryFinalSpecsIfInFailedSpecs = 2,4
+reRunFailedSpecs= [5,3,1,2,4]
+```
+
+
 # Caveats
 
 This has not yet been tested with Protractor + Mocha. It _should_ function similarly. Please update with an issue or PR if this is not the case.
