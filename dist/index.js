@@ -165,6 +165,11 @@ exports['default'] = function () {
           specFiles = specFiles.concat(foundFailedEndSpecs);
         }
 
+        (0, _logger2['default'])('info', 'retryInitialSpec:\n');
+        (0, _logger2['default'])('info', parsedOptions.retryInitialSpec + '\n');
+
+        (0, _logger2['default'])('info', 'foundFailedInitailSpecs:\n');
+        (0, _logger2['default'])('info', foundFailedInitailSpecs.length === 0 + '\n');
         // If retryInitialSpec is specifed, add it to the beginning of specFiles array
         parsedOptions.retryInitialSpec && foundFailedInitailSpecs.length === 0 && specFiles.unshift(parsedOptions.retryInitialSpec);
 
