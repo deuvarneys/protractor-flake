@@ -139,10 +139,10 @@ export default function (options = {}, callback = function noop () {}) {
 
 
       // If retryInitialSpec is specifed, add it to the beginning of specFiles array
-      parsedOptions.retryInitialSpec && !foundFailedInitailSpecs && specFiles.unshift(parsedOptions.retryInitialSpec);
+      parsedOptions.retryInitialSpec && !foundFailedInitailSpecs.length && specFiles.unshift(parsedOptions.retryInitialSpec);
 
       // If retryFinalSpec is specifed, append it to the end of specFiles array
-      parsedOptions.retryFinalSpec && !foundFailedEndSpecs && specFiles.push(parsedOptions.retryFinalSpec);
+      parsedOptions.retryFinalSpec && !foundFailedEndSpecs.length && specFiles.push(parsedOptions.retryFinalSpec);
 
       protractorArgs.push('--specs', specFiles.join(','));
 
