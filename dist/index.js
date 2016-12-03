@@ -166,10 +166,10 @@ exports['default'] = function () {
         }
 
         // If retryInitialSpec is specifed, add it to the beginning of specFiles array
-        parsedOptions.retryInitialSpec && !foundFailedInitailSpecs.length && specFiles.unshift(parsedOptions.retryInitialSpec);
+        parsedOptions.retryInitialSpec && foundFailedInitailSpecs.length === 0 && specFiles.unshift(parsedOptions.retryInitialSpec);
 
         // If retryFinalSpec is specifed, append it to the end of specFiles array
-        parsedOptions.retryFinalSpec && !foundFailedEndSpecs.length && specFiles.push(parsedOptions.retryFinalSpec);
+        parsedOptions.retryFinalSpec && foundFailedEndSpecs.length === 0 && specFiles.push(parsedOptions.retryFinalSpec);
 
         protractorArgs.push('--specs', specFiles.join(','));
 
