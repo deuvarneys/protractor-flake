@@ -73,7 +73,7 @@ export default function (options = {}, callback = function noop () {}) {
     let protractorArgs = [protractorBinPath].concat(parsedOptions.protractorArgs)
     let output = ''
 
-    if (specFiles.length) {
+    if (specFiles.length > 0) {
 
       //Remove duplicate failed specFiles (All specs are running in one browser with retry logic)
       // Using uniqBy as uniq has a bug since lodash 4.0
@@ -84,7 +84,7 @@ export default function (options = {}, callback = function noop () {}) {
       protractorArgs = filterArgs(protractorArgs)
 
       //Do not rerun specified specs if they failed
-      if (protractorArgs.retryDoNotRerunFailedSpecs){
+      if (protractorArgs.retryDoNotRerunFailedSpecs.length > 0){
         //Get array of do not rerun specs
         const doNotRerunFailedSpecs = protractorArgs.retryDoNotRerunFailedSpecs.split(',');
         //Filter out specs that are not in rerun list
@@ -99,7 +99,7 @@ export default function (options = {}, callback = function noop () {}) {
 
 
       const foundFailedInitailSpecs = [];
-      if (protractorArgs.retryInitialSpecsIfInFailedSpecs){
+      if (protractorArgs.retryInitialSpecsIfInFailedSpecs.length > 0){
         //Get array retryInitialSpecsIfInFailedSpecs
         const retryInitialSpecsIfInFailedSpecs = protractorArgs.retryInitialSpecsIfInFailedSpecs.split(',');
 
@@ -119,7 +119,7 @@ export default function (options = {}, callback = function noop () {}) {
 
 
       const foundFailedEndSpecs = [];
-      if (protractorArgs.retryFinalSpecsIfInFailedSpecs){
+      if (protractorArgs.retryFinalSpecsIfInFailedSpecs.length > 0){
         //Get array retryFinalSpecsIfInFailedSpecs
         const retryFinalSpecsIfInFailedSpecs = protractorArgs.retryFinalSpecsIfInFailedSpecs.split(',');
 

@@ -99,7 +99,7 @@ exports['default'] = function () {
     var protractorArgs = [protractorBinPath].concat(parsedOptions.protractorArgs);
     var output = '';
 
-    if (specFiles.length) {
+    if (specFiles.length > 0) {
       (function () {
 
         //Remove duplicate failed specFiles (All specs are running in one browser with retry logic)
@@ -111,7 +111,7 @@ exports['default'] = function () {
         protractorArgs = filterArgs(protractorArgs);
 
         //Do not rerun specified specs if they failed
-        if (protractorArgs.retryDoNotRerunFailedSpecs) {
+        if (protractorArgs.retryDoNotRerunFailedSpecs.length > 0) {
           (function () {
             //Get array of do not rerun specs
             var doNotRerunFailedSpecs = protractorArgs.retryDoNotRerunFailedSpecs.split(',');
@@ -128,7 +128,7 @@ exports['default'] = function () {
         }
 
         var foundFailedInitailSpecs = [];
-        if (protractorArgs.retryInitialSpecsIfInFailedSpecs) {
+        if (protractorArgs.retryInitialSpecsIfInFailedSpecs.length > 0) {
           //Get array retryInitialSpecsIfInFailedSpecs
           var retryInitialSpecsIfInFailedSpecs = protractorArgs.retryInitialSpecsIfInFailedSpecs.split(',');
 
@@ -147,7 +147,7 @@ exports['default'] = function () {
         }
 
         var foundFailedEndSpecs = [];
-        if (protractorArgs.retryFinalSpecsIfInFailedSpecs) {
+        if (protractorArgs.retryFinalSpecsIfInFailedSpecs.length > 0) {
           //Get array retryFinalSpecsIfInFailedSpecs
           var retryFinalSpecsIfInFailedSpecs = protractorArgs.retryFinalSpecsIfInFailedSpecs.split(',');
 
