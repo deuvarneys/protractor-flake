@@ -85,6 +85,7 @@ export default function (options = {}, callback = function noop () {}) {
 
       //Do not rerun specified specs if they failed
       if (parsedOptions.retryDoNotRerunFailedSpecs.length > 0){
+        log('info', '#######retryDoNotRerunFailedSpecs is greater than 0:\n')
         //Get array of do not rerun specs
         const doNotRerunFailedSpecs = parsedOptions.retryDoNotRerunFailedSpecs.split(',');
         //Filter out specs that are not in rerun list
@@ -100,6 +101,8 @@ export default function (options = {}, callback = function noop () {}) {
 
       const foundFailedInitailSpecs = [];
       if (parsedOptions.retryInitialSpecsIfInFailedSpecs.length > 0){
+        log('info', '#######retryInitialSpecsIfInFailedSpecs is greater than 0:\n')
+
         //Get array retryInitialSpecsIfInFailedSpecs
         const retryInitialSpecsIfInFailedSpecs = parsedOptions.retryInitialSpecsIfInFailedSpecs.split(',');
 
@@ -120,6 +123,8 @@ export default function (options = {}, callback = function noop () {}) {
 
       const foundFailedEndSpecs = [];
       if (parsedOptions.retryFinalSpecsIfInFailedSpecs.length > 0){
+        log('info', '#######retryFinalSpecsIfInFailedSpecs is greater than 0:\n')
+
         //Get array retryFinalSpecsIfInFailedSpecs
         const retryFinalSpecsIfInFailedSpecs = parsedOptions.retryFinalSpecsIfInFailedSpecs.split(',');
 
