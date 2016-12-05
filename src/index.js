@@ -84,9 +84,9 @@ export default function (options = {}, callback = function noop () {}) {
       protractorArgs = filterArgs(protractorArgs)
 
       //Do not rerun specified specs if they failed
-      if (protractorArgs.retryDoNotRerunFailedSpecs.length > 0){
+      if (parsedOptions.retryDoNotRerunFailedSpecs.length > 0){
         //Get array of do not rerun specs
-        const doNotRerunFailedSpecs = protractorArgs.retryDoNotRerunFailedSpecs.split(',');
+        const doNotRerunFailedSpecs = parsedOptions.retryDoNotRerunFailedSpecs.split(',');
         //Filter out specs that are not in rerun list
         specFiles = specFiles.filter((failedSpec) => (
           // Return inverse of specs that are in doNotRerunFailedSpecs array
@@ -99,9 +99,9 @@ export default function (options = {}, callback = function noop () {}) {
 
 
       const foundFailedInitailSpecs = [];
-      if (protractorArgs.retryInitialSpecsIfInFailedSpecs.length > 0){
+      if (parsedOptions.retryInitialSpecsIfInFailedSpecs.length > 0){
         //Get array retryInitialSpecsIfInFailedSpecs
-        const retryInitialSpecsIfInFailedSpecs = protractorArgs.retryInitialSpecsIfInFailedSpecs.split(',');
+        const retryInitialSpecsIfInFailedSpecs = parsedOptions.retryInitialSpecsIfInFailedSpecs.split(',');
 
         retryInitialSpecsIfInFailedSpecs.forEach((initalFailedSpec) => {
           specFiles.forEach((failedSpec)=> {
@@ -119,9 +119,9 @@ export default function (options = {}, callback = function noop () {}) {
 
 
       const foundFailedEndSpecs = [];
-      if (protractorArgs.retryFinalSpecsIfInFailedSpecs.length > 0){
+      if (parsedOptions.retryFinalSpecsIfInFailedSpecs.length > 0){
         //Get array retryFinalSpecsIfInFailedSpecs
-        const retryFinalSpecsIfInFailedSpecs = protractorArgs.retryFinalSpecsIfInFailedSpecs.split(',');
+        const retryFinalSpecsIfInFailedSpecs = parsedOptions.retryFinalSpecsIfInFailedSpecs.split(',');
 
         retryFinalSpecsIfInFailedSpecs.forEach((finalFailedSpecs) => {
           specFiles.forEach((failedSpec)=> {
