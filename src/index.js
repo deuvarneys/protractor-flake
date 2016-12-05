@@ -91,9 +91,9 @@ export default function (options = {}, callback = function noop () {}) {
         //Filter out specs that are not in rerun list
         specFiles = specFiles.filter((failedSpec) => (
           // Return inverse of specs that are in doNotRerunFailedSpecs array
-          !_.some(doNotRerunFailedSpecs, (doNotReRunSpec) => {
-              return failedSpec.indexOf(doNotReRunSpec)
-          })
+          !_.some(doNotRerunFailedSpecs, (doNotReRunSpec) => (
+               failedSpec.includes(doNotReRunSpec)
+          ))
 
         ));
       }
@@ -101,7 +101,6 @@ export default function (options = {}, callback = function noop () {}) {
 
       const foundFailedInitailSpecs = [];
       if (parsedOptions.retryInitialSpecsIfInFailedSpecs.length > 0){
-        log('info', '#######retryInitialSpecsIfInFailedSpecs is greater than 0:\n')
 
         //Get array retryInitialSpecsIfInFailedSpecs
         const retryInitialSpecsIfInFailedSpecs = parsedOptions.retryInitialSpecsIfInFailedSpecs.split(',');
@@ -123,7 +122,6 @@ export default function (options = {}, callback = function noop () {}) {
 
       const foundFailedEndSpecs = [];
       if (parsedOptions.retryFinalSpecsIfInFailedSpecs.length > 0){
-        log('info', '#######retryFinalSpecsIfInFailedSpecs is greater than 0:\n')
 
         //Get array retryFinalSpecsIfInFailedSpecs
         const retryFinalSpecsIfInFailedSpecs = parsedOptions.retryFinalSpecsIfInFailedSpecs.split(',');
@@ -142,11 +140,6 @@ export default function (options = {}, callback = function noop () {}) {
         specFiles = specFiles.concat(foundFailedEndSpecs);
       }
 
-      // log('info', 'retryInitialSpec:\n')
-      //  log('info', parsedOptions.retryInitialSpec + '\n')
-      //
-      //  log('info', 'foundFailedInitailSpecs:\n')
-      //  log('info', foundFailedInitailSpecs.length === 0 + '\n')
       // If retryInitialSpec is specifed, add it to the beginning of specFiles array
       if ( parsedOptions.retryInitialSpec && foundFailedInitailSpecs.length === 0 ) {
         specFiles.unshift(parsedOptions.retryInitialSpec);

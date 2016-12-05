@@ -121,7 +121,7 @@ exports['default'] = function () {
               return(
                 // Return inverse of specs that are in doNotRerunFailedSpecs array
                 !_lodash2['default'].some(doNotRerunFailedSpecs, function (doNotReRunSpec) {
-                  return failedSpec.indexOf(doNotReRunSpec);
+                  return failedSpec.includes(doNotReRunSpec);
                 })
               );
             });
@@ -130,7 +130,6 @@ exports['default'] = function () {
 
         var foundFailedInitailSpecs = [];
         if (parsedOptions.retryInitialSpecsIfInFailedSpecs.length > 0) {
-          (0, _logger2['default'])('info', '#######retryInitialSpecsIfInFailedSpecs is greater than 0:\n');
 
           //Get array retryInitialSpecsIfInFailedSpecs
           var retryInitialSpecsIfInFailedSpecs = parsedOptions.retryInitialSpecsIfInFailedSpecs.split(',');
@@ -151,7 +150,6 @@ exports['default'] = function () {
 
         var foundFailedEndSpecs = [];
         if (parsedOptions.retryFinalSpecsIfInFailedSpecs.length > 0) {
-          (0, _logger2['default'])('info', '#######retryFinalSpecsIfInFailedSpecs is greater than 0:\n');
 
           //Get array retryFinalSpecsIfInFailedSpecs
           var retryFinalSpecsIfInFailedSpecs = parsedOptions.retryFinalSpecsIfInFailedSpecs.split(',');
@@ -170,11 +168,6 @@ exports['default'] = function () {
           specFiles = specFiles.concat(foundFailedEndSpecs);
         }
 
-        // log('info', 'retryInitialSpec:\n')
-        //  log('info', parsedOptions.retryInitialSpec + '\n')
-        //
-        //  log('info', 'foundFailedInitailSpecs:\n')
-        //  log('info', foundFailedInitailSpecs.length === 0 + '\n')
         // If retryInitialSpec is specifed, add it to the beginning of specFiles array
         if (parsedOptions.retryInitialSpec && foundFailedInitailSpecs.length === 0) {
           specFiles.unshift(parsedOptions.retryInitialSpec);
