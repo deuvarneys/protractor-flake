@@ -113,7 +113,6 @@ exports['default'] = function () {
         //Do not rerun specified specs if they failed
         if (parsedOptions.retryDoNotRerunFailedSpecs.length > 0) {
           (function () {
-            (0, _logger2['default'])('info', '#######retryDoNotRerunFailedSpecs is greater than 0:\n');
             //Get array of do not rerun specs
             var doNotRerunFailedSpecs = parsedOptions.retryDoNotRerunFailedSpecs.split(',');
             //Filter out specs that are not in rerun list
