@@ -149,7 +149,8 @@ export default function (options = {}, callback = function noop () {}) {
         specFiles.push(parsedOptions.retryFinalSpec);
       }
 
-      protractorArgs.push('--specs', specFiles.join(','));
+      // Do not pass specs directly to protractor, let the custom parser generate the needed structure.
+      // protractorArgs.push('--specs', specFiles.join(','));
 
       //Add parameters to set/override values in protractor.conf.js file in event of spec failure
       if (parsedOptions.retryArgs){
